@@ -1,49 +1,64 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   rush02.c                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: hezhou <marvin@42.fr>                      +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/08 15:52:26 by hezhou            #+#    #+#             */
-/*   Updated: 2025/11/09 16:36:22 by lsainz-d         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include <unistd.h>
-
+// Declares the prototype of the 'ft_putchar' function
 void	ft_putchar(char c);
 
-void	f_print(char a, char b, int x, int v_positionx)
+// This function run trought the columns
+void	ft_print(int columns, char first, char between, char last)
 {
-	ft_putchar (a);
-	v_posicionx++;
-	while (v_positionx < x)
+	int	i;
+
+	i = 1;
+
+	// while the counter is less than the columns
+	while (i <= columns)
 	{
-		ft_putchar (b);
-		v_positionx++;
+		// If it's in the first column, print the first char
+		if (i == 1)
+			ft_putchar(first);
+
+		// If it's in the last column, print the first char
+		else if (i == columns)
+			ft_putchar(last);
+
+		// If if's in the middle, print 'Between'
+		else
+			ft_putchar(between);
+		i++;
 	}
-	if (x > 1)
-		ft_putchar(a);
-	ft_putchar ('\n');
+	// Prints a new line in the end
+	ft_putchar('\n');
 }
 
+// This function run trought the lines
 void	rush(int x, int y)
 {
-	int	v_positionx;
-	int	v_positiony;
+	int	i;
+    int column;
+    int	line;
 
-	v_positionx = 1;
-	v_positiony = 1;
-	if (x <= 0 || y <= 0)
-		return ;
-	f_print('A', 'B', x, v_positionx);
-	v_positiony++;
-	while (v_posiciony < y)
+	i = 1;
+	column = x;
+	line = y;
+    // If the column and the line is greater than 1
+	if (column >= 1 && line >= 1 )
 	{
-		f_imprimir ('B', ' ', x, v_positionx);
-		v_posiciony++;
+        // while the counter is less than or equal to the number of lines
+		while (i <= line)
+		{
+			// If it's in the first line
+			if (i == 1)
+				
+				// print the standard of the first line by passing the number of columns
+				ft_print(column, 'A', 'B', 'A');
+
+			// If it's in the last line
+			else if (i == line)
+
+				// print the standard of the last line by passing the number of columns
+				ft_print(column, 'C', 'B', 'C');
+			else
+				// print the standard of the middle lines by passing the number of columns
+				ft_print(column, 'B', ' ', 'B');
+			i++;
+		}
 	}
-	if (y > 1)
-		f_print ('C', 'B', x, v_positionx);
 }

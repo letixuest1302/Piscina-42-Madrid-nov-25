@@ -11,9 +11,6 @@
 /* ************************************************************************** */
 
 #include "ft_headers.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
 
 int	ft_validate_args(int argc, char **argv, char **dict_path)
 {
@@ -22,15 +19,11 @@ int	ft_validate_args(int argc, char **argv, char **dict_path)
 	if (argc == 2)
 	{
 		*dict_path = "numbers.dict";
-		//*number = ft_atoi(argv[1]);
 	}
 	else
 	{
 		*dict_path = argv[1];
-		//*number = ft_atoi(argv[2]);
 	}
-	// igual aquí habría que validar el string de entrada
-	// validate_argv o algo así
 	return (1);
 }
 
@@ -48,9 +41,4 @@ int	ft_is_numeric(char *str)
 		i++;
 	}
 	return (1);
-}
-
-int	main(int argc, char *argv[])
-{
-	return (0);
 }

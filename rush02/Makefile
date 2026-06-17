@@ -3,6 +3,7 @@ NAME = rush-02
 SRC = ft_boxdivision.c \
       ft_readdict.c \
       ft_std_functions_copy.c \
+      ft_validate.c\
 
 OBJS = ${SRC:.c=.o}
 

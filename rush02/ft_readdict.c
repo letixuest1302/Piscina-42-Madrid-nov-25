@@ -5,100 +5,95 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: ciparren <ciparren@student.42madrid.c      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/22 14:36:07 by ciparren          #+#    #+#             */
-/*   Updated: 2025/11/23 19:24:23 by ciparren         ###   ########.fr       */
+/*   Created: 2025/11/23 13:40:55 by ciparren          #+#    #+#             */
+/*   Updated: 2025/11/23 19:21:27 by ciparren         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_headers.h"
 #include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
+#include <stdlib.h>
+
+int	ft_get_dict_size(char *path)
+{
+	int		fd;
+	int		count;
+	int		bytes_read;
+	char	buffer[1024];
+
+	count = 0;
+	fd = open(path, O_RDONLY);
+	if (fd == -1)
+		return (-1);
+	bytes_read = read(fd, buffer, sizeof(buffer));
+	while (bytes_read > 0)
+	{
+		count += bytes_read;
+		bytes_read = read(fd, buffer, sizeof(buffer));
+	}
+	close(fd);
+	return (count);
+}
+
+char	*ft_read_dict(char *path)
+{
+	int		fd;
+	int		size;
+	char	*buffer;
+
+	size = ft_get_dict_size(path);
+	if (size <= 0)
+		return (NULL);
+	buffer = (char *)malloc(sizeof(char) * (size + 1));
+	if (!buffer)
+		return (NULL);
+	fd = open(path, O_RDONLY);
+	if (fd == -1)
+	{
+		free(buffer);
+		return (NULL);
+	}
+	read(fd, buffer, size);
+	buffer[size] = '\0';
+	close(fd);
+	return (buffer);
+}
 
 int	main(int argc, char **argv)
 {
-	int		fd;
-	ssize_t	bytes_r;
-	char	buffer[1024];
-	char	keys[42][42];
-	char	values[42][42];
+	char	*dict_content;
+	char	*dict_path;
+	char	*num_to_convert;
+	char	keys[100][42];
+	char	values[100][42];
 
-	keys[42][42] = {0};
-	values[42][42] = {0};
-	bytes_r = 0;
-	if (argc != 2)
-		return (-1);
-	fd = open("numbers.dict", O_RDONLY);
-	if (fd == -1)
+	if (!ft_validate_args(argc, argv, &dict_path))
 	{
-		write(1, "Dict Error\n", 11);
-		return (-1);
+		ft_putstr("Error\n");
+		return (1);
 	}
-	while ((bytes_r = read(fd, buffer, sizeof(buffer) - 1)) > 0)
+	num_to_convert = (argc == 3) ? argv[2] : argv[1];
+	if (!ft_is_numeric(num_to_convert))
 	{
-		buffer[bytes_r] = '\0';
+		ft_putstr("Error\n");
+		return (1);
 	}
-	close(fd);
-	ft_parsedict(buffer, keys, values);
-	// Aquí deberías pasar el número a convertir
-	divide(argv[1], keys, values);
+	dict_content = ft_read_dict(dict_path);
+	if (!dict_content)
+	{
+		ft_putstr("Dict Error\n");
+		return (1);
+	}
+	ft_memset((char *)keys, 0, sizeof(keys));
+	ft_memset((char *)values, 0, sizeof(values));
+	if (ft_parsedict(dict_content, keys, values) == -1)
+	{
+		free(dict_content);
+		ft_putstr("Dict Error\n");
+		return (1);
+	}
+	free(dict_content);
+	divide(num_to_convert, keys, values);
 	return (0);
-}
-
-int	ft_parsedict(char *buffer, char number[42][42], char value[42][42])
-{
-	int		i;
-	int		cont;
-	char	charnum[40];
-	char	charvalue[40];
-	int		contuni;
-
-	i = 0;
-	cont = 0;
-	contuni = 0;
-	ft_memset(charnum, 0, 40);
-	ft_memset(charvalue, 0, 40);
-	while (buffer[i])
-	{
-		while (buffer[i] != '\n' && buffer[i])
-		{
-			while (buffer[i] != ':' && buffer[i])
-			{
-				if (buffer[i] == ' ')
-				{
-					i++;
-					continue ;
-				}
-				charnum[contuni] = buffer[i];
-				contuni++;
-				i++;
-			}
-			if (buffer[i] == ':')
-				i++;
-			charnum[contuni] = '\0';
-			ft_strcpy(number[cont], charnum);
-			contuni = 0;
-			while (buffer[i] != '\n' && buffer[i])
-			{
-				if (buffer[i] == ' ')
-				{
-					i++;
-					continue ;
-				}
-				charvalue[contuni] = buffer[i];
-				contuni++;
-				i++;
-			}
-			charvalue[contuni] = '\0';
-			ft_strcpy(value[cont], charvalue);
-			contuni = 0;
-			ft_memset(charnum, 0, 40);
-			ft_memset(charvalue, 0, 40);
-			cont++;
-		}
-		if (buffer[i] == '\n')
-			i++;
-	}
-	return (cont);
 }

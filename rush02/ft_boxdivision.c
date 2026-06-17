@@ -1,202 +1,125 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_boxdivision.c                                   :+:      :+:    :+:   */
+/*   ft_boxdivion.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: acanadil <acanadil@student.42madrid.c      +#+  +:+       +#+        */
+/*   By: ciparren <ciparren@student.42madrid.c      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/22 13:53:17 by acanadil          #+#    #+#             */
-/*   Updated: 2025/11/23 20:36:41 by ciparren         ###   ########.fr       */
+/*   Created: 2025/11/23 13:40:55 by ciparren          #+#    #+#             */
+/*   Updated: 2025/11/23 19:21:27 by ciparren         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_headers.h"
 #include <stdlib.h>
-#include <unistd.h>
 
-void	divide(char *input_num, char number[42][42], char value[42][42])
-{
-	int		total_boxes;
-	int		last_box_digits;
-	int		i;
-	char	*current_box;
-	char	*middle;
-
-	total_boxes = ft_count_boxes(input_num);
-	last_box_digits = ft_last_box(input_num);
-	i = 0;
-	/*	
-	if (last_box_digits > 0)
-	{
-		current_box = ft_getfirstbox(input_num, last_box_digits);
-		ft_print_box(current_box, number, value);
-		free(current_box);
-		if (total_boxes > 1)
-		{
-			middle = ft_boxzeros(total_boxes - 1);
-			ft_print_value(middle, number, value);
-			free(middle);
-			ft_putstr(" ");
-		}
-		i++;
-	}
-*/
-	while (i < total_boxes)
-	{
-		current_box = ft_get_complete_box(input_num, i, last_box_digits);
-		ft_print_box(current_box, number, value);
-		free(current_box);
-		if (i < total_boxes - 1)
-		{
-			middle = ft_boxzeros(total_boxes - i - 1);
-			ft_print_value(middle, number, value);
-			ft_putstr(" ");
-		}
-		i++;
-	}
-}
-
-char	*ft_getfirstbox(char *number, int last_box_digits)
-{
-	char	*first_box;
-	int		i;
-
-	first_box = malloc(last_box_digits + 1);
-	if (!first_box)
-		return (NULL);
-	i = 0;
-	while (i < last_box_digits)
-	{
-		first_box[i] = number[i];
-		i++;
-	}
-	first_box[i] = '\0';
-	return (first_box);
-}
-
-char	*ft_get_complete_box(char *number, int box_index, int last_box_digits)
-{
-	char	*box;
-	int		start;
-	int		i;
-
-	box = malloc(4);
-	if (!box)
-		return (NULL);
-	start = last_box_digits + (box_index - 1) * 3;
-	box[0] = '0';
-	box[1] = '0';
-	box[2] = '0';
-	i = 0;
-	while (i < 3)
-	{
-		box[i] = number[start + i];
-		i++;
-	}
-	box[3] = '\0';
-	return (box);
-}
-
-int	ft_count_boxes(char *str)
+void	ft_normalize_box(char *dest, char *src)
 {
 	int	len;
-	int	boxes;
 
-	len = ft_strlen(str);
-	boxes = len / 3;
-	if (len % 3 != 0)
-		boxes++;
-	return (boxes);
-}
-
-int	ft_last_box(char *str)
-{
-	int	len;
-	int	lastbox;
-
-	len = ft_strlen(str);
-	lastbox = len % 3;
-	if (lastbox == 0)
-		lastbox = 3;
-	return (lastbox);
-}
-
-char	*ft_boxzeros(int box_index)
-{
-	char	*zeros;
-	int		total_zeros;
-	int		i;
-
-	if (box_index <= 0)
-		return (NULL);
-	total_zeros = box_index * 3;
-	zeros = malloc(total_zeros + 2);
-	if (!zeros)
-		return (NULL);
-	zeros[0] = '1';
-	i = 1;
-	while (i <= total_zeros)
+	len = ft_strlen(src);
+	if (len == 3)
 	{
-		zeros[i] = '0';
-		i++;
+		dest[0] = src[0];
+		dest[1] = src[1];
+		dest[2] = src[2];
 	}
-	zeros[i] = '\0';
-	return (zeros);
+	else if (len == 2)
+	{
+		dest[0] = '0';
+		dest[1] = src[0];
+		dest[2] = src[1];
+	}
+	else
+	{
+		dest[0] = '0';
+		dest[1] = '0';
+		dest[2] = src[0];
+	}
+	dest[3] = '\0';
 }
 
-void	ft_print_box(char *box, char number[42][42], char value[42][42])
+void	ft_print_tens_units(char *box, char num[100][42], char val[100][42])
 {
 	char	digit[2];
 	char	tens[3];
 
-	if (box[0] > '0' && box[0] <= '9')
+	digit[1] = '\0';
+	tens[2] = '\0';
+	if (box[1] >= '2')
 	{
-		digit[0] = box[0];
-		digit[1] = '\0';
-		ft_print_value(digit, number, value);
-		ft_putstr(" hundred ");
+		tens[0] = box[1];
+		tens[1] = '0';
+		ft_print_value(tens, num, val);
+		if (box[2] > '0')
+		{
+			ft_putstr(" ");
+			digit[0] = box[2];
+			ft_print_value(digit, num, val);
+		}
 	}
-	if (box[0] != '0' && (box[1] != '0' || box[2] != '0'))
-		ft_putstr(" ");
-	if (box[1] == '1')
+	else if (box[1] == '1' || (box[1] == '0' && box[2] > '0'))
 	{
 		tens[0] = box[1];
 		tens[1] = box[2];
-		tens[2] = '\0';
-		ft_print_value(tens, number, value);
+		if (box[1] == '0')
+			ft_print_value(&box[2], num, val);
+		else
+			ft_print_value(tens, num, val);
 	}
-	else
-	{
-		if (box[1] != '0')
-		{
-			tens[0] = box[1];
-			tens[1] = '0';
-			tens[2] = '\0';
-			ft_print_value(tens, number, value);
-		}
-		if (box[2] != '0')
-		{
-			digit[0] = box[2];
-			digit[1] = '\0';
-			ft_print_value(digit, number, value);
-		}
-	}
-	write(1, " ", 1);
 }
 
-void	ft_print_value(char *key, char number[42][42], char value[42][42])
+void	ft_print_box(char *raw_box, char num[100][42], char val[100][42])
 {
-	int	i;
+	char	box[4];
+	char	digit[2];
 
-	i = 0;
-	while (i < 42 && number[i][0] != '\0')
+	digit[1] = '\0';
+	ft_normalize_box(box, raw_box);
+	if (box[0] > '0' && box[0] <= '9')
 	{
-		if (ft_strcmp(number[i], key) == 0)
-		{
-			ft_putstr(value[i]);
-			return ;
-		}
-		i++;
+		digit[0] = box[0];
+		ft_print_value(digit, num, val);
+		ft_putstr(" ");
+		ft_print_value("100", num, val);
+		if (box[1] > '0' || box[2] > '0')
+			ft_putstr(" ");
 	}
-	//	ft_putstr("Dict Error");
+	ft_print_tens_units(box, num, val);
+}
+
+void	divide(char *input_num, char number[100][42], char value[100][42])
+{
+	int		total_boxes;
+	int		last_digits;
+	int		i;
+	char	*box;
+	char	*zeros;
+
+	total_boxes = ft_count_boxes(input_num);
+	last_digits = ft_last_box(input_num);
+	i = -1;
+	while (++i < total_boxes)
+	{
+		if (i == 0)
+			box = ft_getfirstbox(input_num, last_digits);
+		else
+			box = ft_get_complete_box(input_num, i - 1, last_digits);
+		if (ft_strcmp(box, "000") != 0 && ft_strcmp(box, "00") != 0
+			&& ft_strcmp(box, "0") != 0)
+		{
+			if (i > 0)
+				ft_putstr(" ");
+			ft_print_box(box, number, value);
+			if (i < total_boxes - 1)
+			{
+				ft_putstr(" ");
+				zeros = ft_boxzeros(total_boxes - i - 1);
+				ft_print_value(zeros, number, value);
+				free(zeros);
+			}
+		}
+		free(box);
+	}
+	ft_putstr("\n");
 }

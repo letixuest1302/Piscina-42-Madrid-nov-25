@@ -1,13 +1,13 @@
 /* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   ft_boxdivion.c                                      :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: ciparren <ciparren@student.42madrid.c      +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/23 13:40:55 by ciparren          #+#    #+#             */
-/*   Updated: 2025/11/23 19:21:27 by ciparren         ###   ########.fr       */
-/*                                                                            */
+/* */
+/* :::      ::::::::   */
+/* ft_boxdivision.c                                   :+:      :+:    :+:   */
+/* +:+ +:+         +:+     */
+/* By: ciparren <ciparren@student.42madrid.c      +#+  +:+       +#+        */
+/* +#+#+#+#+#+   +#+           */
+/* Created: 2025/11/23 13:40:55 by ciparren          #+#    #+#             */
+/* Updated: 2026/06/18 11:00:00 by ciparren         ###   ########.fr       */
+/* */
 /* ************************************************************************** */
 
 #include "ft_headers.h"
@@ -62,10 +62,7 @@ void	ft_print_tens_units(char *box, char num[100][42], char val[100][42])
 	{
 		tens[0] = box[1];
 		tens[1] = box[2];
-		if (box[1] == '0')
-			ft_print_value(&box[2], num, val);
-		else
-			ft_print_value(tens, num, val);
+		ft_print_value(tens, num, val);
 	}
 }
 
@@ -93,12 +90,20 @@ void	divide(char *input_num, char number[100][42], char value[100][42])
 	int		total_boxes;
 	int		last_digits;
 	int		i;
+	int		first_printed;
 	char	*box;
 	char	*zeros;
 
+	if (ft_strcmp(input_num, "0") == 0)
+	{
+		ft_print_value("0", number, value);
+		ft_putstr("\n");
+		return ;
+	}
 	total_boxes = ft_count_boxes(input_num);
 	last_digits = ft_last_box(input_num);
 	i = -1;
+	first_printed = 0;
 	while (++i < total_boxes)
 	{
 		if (i == 0)
@@ -108,9 +113,10 @@ void	divide(char *input_num, char number[100][42], char value[100][42])
 		if (ft_strcmp(box, "000") != 0 && ft_strcmp(box, "00") != 0
 			&& ft_strcmp(box, "0") != 0)
 		{
-			if (i > 0)
+			if (first_printed)
 				ft_putstr(" ");
 			ft_print_box(box, number, value);
+			first_printed = 1;
 			if (i < total_boxes - 1)
 			{
 				ft_putstr(" ");
